@@ -1,0 +1,46 @@
+import React from 'react'
+import { Link } from 'react-router'
+import { useState } from 'react';
+import { Bars2Icon } from '@heroicons/react/24/solid'
+function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="bg-transparent shadow-md px-6 py-2">
+      <div className="flex justify-between items-center">
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logo" className="h-10 w-10" />
+          <span className="text-xl font-bold text-gray-800">Online Judge</span>
+        </Link>
+
+        <div className="hidden md:flex items-center gap-6">
+          <Link to="/" className="text-gray-600 hover:text-black transition">Home</Link>
+          <Link to="/about" className="text-gray-600 hover:text-black transition">About</Link>
+          <Link to="/problemlist" className="text-gray-600 hover:text-black transition">Problems</Link>
+          <Link to="/challenges" className="text-gray-600 hover:text-black transition">Challenges</Link>
+          <Link to="/signup" className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Signup</Link>
+          <Link to="/login" className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Login</Link>
+        </div>
+
+        <div className="md:hidden">
+          <button onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <span>X</span> : <Bars2Icon className='w-10 h-10'/> }
+          </button>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="md:hidden mt-10 flex flex-col gap-4">
+          <Link to="/" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Home</Link>
+          <Link to="/about" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">About</Link>
+          <Link to="/problems" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Problems</Link>
+          <Link to="/challenges" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Challenges</Link>
+          <Link to="/signup" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Signup</Link>
+          <Link to="/login" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Login</Link>
+        </div>
+      )}
+    </nav>
+  )
+}
+
+export default Navbar
