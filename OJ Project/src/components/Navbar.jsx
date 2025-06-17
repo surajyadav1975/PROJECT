@@ -1,8 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import { useState } from 'react';
 import { Bars2Icon } from '@heroicons/react/24/solid'
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Navbar() {
@@ -30,13 +30,12 @@ function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-gray-600 hover:text-black transition">Home</Link>
-          <Link to="/about" className="text-gray-600 hover:text-black transition">About</Link>
-          <Link to="/problemlist" className="text-gray-600 hover:text-black transition">Problems</Link>
-          <Link to="/challenges" className="text-gray-600 hover:text-black transition">Challenges</Link>
-          <Link to="/signup" className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Signup</Link>
-          <Link to="/login" className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Login</Link>
-          <button onClick={handlelogout} className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Logout</button>
+          <Link to="/" className="bg-white text-black border px-4 py-1 rounded-lg hover:bg-black hover:text-white transition">Home</Link>
+          <Link to="/problemlist" className="bg-white text-black border px-4 py-1 rounded-lg hover:bg-black hover:text-white transition">Problems</Link>
+          <Link to="/createproblem" className="bg-white text-black border px-4 py-1 rounded-lg hover:bg-black hover:text-white transition">Dashboard</Link>
+          <Link to="/signup" className="bg-white text-black border px-4 py-1 rounded-lg hover:bg-black hover:text-white transition">Signup</Link>
+          <Link to="/login" className="bg-white text-black border px-4 py-1 rounded-lg hover:bg-black hover:text-white transition">Login</Link>
+          <button onClick={handlelogout} className="bg-white text-black border px-4 py-1 rounded-lg hover:bg-black hover:text-white transition">Logout</button>
         </div>
 
         <div className="md:hidden">
@@ -49,9 +48,8 @@ function Navbar() {
       {isOpen && (
         <div className="md:hidden mt-10 flex flex-col gap-4">
           <Link to="/" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Home</Link>
-          <Link to="/about" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">About</Link>
-          <Link to="/problems" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Problems</Link>
-          <Link to="/challenges" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Challenges</Link>
+          <Link to="/problemlist" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Problems</Link>
+          <Link to="/createproblem" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Dashboard</Link>
           <Link to="/signup" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Signup</Link>
           <Link to="/login" onClick={() => setIsOpen(false)} className="text-gray-600 hover:text-black transition">Login</Link>
         </div>

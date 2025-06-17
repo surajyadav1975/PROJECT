@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, Outlet } from 'react-router'
+import { Link, Outlet } from 'react-router-dom'
 import Navbar from './Navbar'
 import ProblemList from './ProblemList'
 

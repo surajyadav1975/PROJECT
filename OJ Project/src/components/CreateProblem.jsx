@@ -1,8 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 const CreateProblem = () => {
+  const navigate=useNavigate();
+
+  useEffect(()=>{
+    const checkadmin=async ()=>{
+      try {
+        const res = await axios.get("http://localhost:3000/dashboard", {
+          withCredentials: true,
+        });
+      } catch (err) {
+        console.log("You are not authorized to access dashboard, you are just an simple little user its only for admin's.");
+        navigate("/"); 
+      }
+    }
+    checkadmin();
+  },[navigate])
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [testcases, setTestcases] = useState([
     { input: "", output: "", visible: false }
@@ -30,8 +46,11 @@ const CreateProblem = () => {
       testcases
     };
 
+
     try {
-      const response=await axios.post("http://localhost:3000/createproblem", problemPayload);
+      const response=await axios.post("http://localhost:3000/createproblem", problemPayload,
+        { withCredentials: true }
+      );
       console.log(response.data.message);
       reset()
       setTestcases([{ input: "", output: "", visible: false }]);

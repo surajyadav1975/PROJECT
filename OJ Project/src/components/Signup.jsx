@@ -1,9 +1,12 @@
 import React from 'react'
 import { useForm } from "react-hook-form"
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import axios from "axios"
+import { useNavigate } from 'react-router-dom';
+
 function Signup() {
+  const navigate=useNavigate();
   const {
     register,
     watch,
@@ -15,6 +18,7 @@ function Signup() {
     try{
       const response= await axios.post("http://localhost:3000/signup", data, { withCredentials: true });
       console.log("user created");
+      navigate('/');
     }
     catch(err){
       alert(err.response.data.message);
@@ -40,6 +44,13 @@ function Signup() {
             {errors.username && (
               <p>{errors.username.message}</p>
             )}
+            <input
+              placeholder="UserType"
+              value="User"
+              readOnly
+              className='w-full border px-3 py-2 rounded bg-gray-100 text-gray-600 cursor-not-allowed'
+              {...register("usertype")}
+            />
             <input
               placeholder="Full Name"
               className='w-full p-2 border border-gray-300 rounded-md focus:outline-none'

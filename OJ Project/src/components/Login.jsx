@@ -1,9 +1,10 @@
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 function Login() {
+  const navigate=useNavigate();
   const {
     register,
     watch,
@@ -17,6 +18,7 @@ function Login() {
         withCredentials: true,
       });
       console.log("user loggedin");
+      navigate('/');
     }
     catch(err){
       alert(err.response.data.message);
