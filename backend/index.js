@@ -2,8 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const  {DBConnection} = require("./DB/mongoose.js");
-const {User} = require("./models/user.js");
-const user = require("./models/user.js");
+const User = require("./models/User.js");
+const Prob = require("./models/Prob.js");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const Isloggedin= require('./middlewares/Isloggedin.js');
 dotenv.config();
 
 const app=express();
@@ -14,6 +18,7 @@ app.use(cors({
     origin: true,
     credentials: true
 }));
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -23,22 +28,123 @@ app.get("/", (req, res) => {
   res.status(200).send("🔥 Backend is running for the Online Judge");
 });
 
-app.post("/signup",(req,res)=>{
-
-  const {username , fullname , email , password , confirmpassword}=req.body;
-
+app.post("/signup",async (req,res)=>{
+  try{
+    const {username , fullname , email , password , confirmpassword}=req.body;
+    // console.log({username , fullname , email , password , confirmpassword})
   if(password != confirmpassword){
     return res.status(400).json({message: "Password and confirm password doesn't match"  });
   }
 
-  res.status(200).send("succesfully signed up");
+  const existingUser = await User.findOne({ email: email.toLowerCase() });
+  // console.log(existingUser);
+  if (existingUser) { return res.status(409).json({ success: false, message: "User with this email already exists"});}
+
+  bcrypt.genSalt(12, function(err, salt) {
+    bcrypt.hash(password, salt, async function(err, hash) {
+        const user = await User.create({
+            username,
+            fullname,
+            email: email.toLowerCase(),
+            password: hash,
+        });
+
+        let token = jwt.sign({ 
+          id: user._id, 
+          email: user.email 
+        },process.env.JWT_KEY);
+
+        res.cookie("token",token,{
+          httpOnly: true,      
+          secure: process.env.NODE_ENV === "production",         
+          sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',          
+          maxAge: 24 * 60 * 60 * 1000, 
+        });
+        
+        return res.status(200).json({message:"Registered"});
+      });
+  });
+  }
+  catch(err){
+    return res.status(400).json({success: false,message: "Validation failed"});
+  }
 })
 
-app.post("/login",(req,res)=>{
-  const {username ,email , password}=req.body;
-  console.log(req.body)
-  res.status(200).send("succesfully logged in");
+app.post("/login",async (req,res)=>{
+  try{
+    const {email , password}=req.body;
+    if (!(email && password)) {
+      return res.status(400).json({success: false,message: "Please provide both email and password"});
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(401).json({success: false,message: "Invalid email or password"});
+    }
+
+    bcrypt.compare(password, user.password, function(err, result) {
+      if(result){
+        let token = jwt.sign({ 
+          id: user._id, 
+          email: user.email 
+        },process.env.JWT_KEY);
+
+        res.cookie("token",token,{
+          httpOnly: true,      
+          secure: process.env.NODE_ENV === "production",         
+          sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',      
+          maxAge: 24 * 60 * 60 * 1000, 
+        });
+        return res.status(200).json({message:"LoogedIN"});
+      }
+      else{
+        return res.status(400).json({message:"incorrect credentials"});
+      }
+    });
+  }
+  catch(err){
+    return res.status(400).json({success: false,message: "Validation failed"});
+  }
 })
+
+app.get('/logout',Isloggedin,(req,res)=>{
+  // console.log('hi');
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",         
+      sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',    
+    })
+    .status(200)
+    .json({
+      success: true,
+      message: "Logged out successfully!",
+    });
+})
+
+app.post("/createproblem",Isloggedin,async (req,res)=>{
+
+  try{
+    const {title,tag,difficulty,description,testcases}= req.body;
+    const prob = await Prob.findOne({ title});
+    if (prob) {
+      return res.status(401).json({success: false,message: "problem already exist with this name"});
+    }
+    const p= await Prob.create({
+      title,
+      tag,
+      difficulty,
+      description,
+      testcases
+    });
+    // console.log(p);
+    res.status(200).json({message:"successfully problem created"})
+  }
+  catch(err){
+    return res.status(400).json({success: false,message: "problem creation failed"});
+  }
+})
+
 
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);

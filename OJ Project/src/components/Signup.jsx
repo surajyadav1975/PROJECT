@@ -13,7 +13,7 @@ function Signup() {
 
   const onSubmit = async(data) => {
     try{
-      const response= await axios.post("http://localhost:3000/signup", data);
+      const response= await axios.post("http://localhost:3000/signup", data, { withCredentials: true });
       console.log("user created");
     }
     catch(err){

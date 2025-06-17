@@ -1,14 +1,17 @@
 import React from 'react';
+import { useState } from 'react';
 
-const problems = [
-  { id: 1, name: 'Two Sum' },
-  { id: 2, name: 'Reverse a Linked List' },
-  { id: 3, name: 'Valid Parentheses' },
-  { id: 4, name: 'Find Duplicate Number' },
-  { id: 5, name: 'Merge Intervals' },
-];
 
 const ProblemList = () => {
+  const [problems,setproblems]=useState([
+    { id: 1, name: 'Two Sum' },
+    { id: 2, name: 'Reverse a Linked List' },
+    { id: 3, name: 'Valid Parentheses' },
+    { id: 4, name: 'Find Duplicate Number' },
+    { id: 5, name: 'Merge Intervals' },
+  ]);
+
+
   return (
     <div className="max-w-3xl mx-auto mt-10 px-4">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">🧠 Problem List</h1>

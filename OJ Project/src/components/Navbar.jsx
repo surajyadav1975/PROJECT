@@ -2,8 +2,24 @@ import React from 'react'
 import { Link } from 'react-router'
 import { useState } from 'react';
 import { Bars2Icon } from '@heroicons/react/24/solid'
+import { useNavigate } from 'react-router';
+import axios from 'axios';
+
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate=useNavigate();
+  const handlelogout=async ()=>{
+     try {
+      const response = await axios.get('http://localhost:3000/logout', {
+        withCredentials: true, 
+      });
+
+    console.log(response.data.message);
+    navigate('/login');
+  } catch (error) {
+    console.error("Logout failed:", error.response?.data?.message || error.message);
+  }
+  }
 
   return (
     <nav className="bg-transparent shadow-md px-6 py-2">
@@ -20,6 +36,7 @@ function Navbar() {
           <Link to="/challenges" className="text-gray-600 hover:text-black transition">Challenges</Link>
           <Link to="/signup" className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Signup</Link>
           <Link to="/login" className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Login</Link>
+          <button onClick={handlelogout} className="bg-white text-gray-600 border px-4 py-1 rounded-lg hover:bg-blue-700 hover:text-white transition">Logout</button>
         </div>
 
         <div className="md:hidden">

@@ -5,6 +5,7 @@ import Login from './components/Login'
 import Signup from './components/Signup'
 import ProblemList from './components/ProblemList'
 import Ide from './components/Ide'
+import CreateProblem from './components/CreateProblem'
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
             <Route path="signup" element={<Signup/>} />
             <Route path="problemlist" element={<ProblemList/>} />
             <Route path="ide" element={<Ide/>} />
+            <Route path="createproblem" element={<CreateProblem/>} />
           </Route>
       </Routes>
     </>
