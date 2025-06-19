@@ -9,10 +9,12 @@ const Ide = () => {
   const [code, setCode] = useState("");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-  const [consoleMsg, setConsoleMsg] = useState("");
+  const [consoleMsg, setConsoleMsg] = useState({});
+  const [submissions,setSubmissions]=useState([]);
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
   const { id } = useParams();
 
-  console.log(code);
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -27,6 +29,43 @@ const Ide = () => {
     };
     fetchProblem();
   }, [id]);
+
+  useEffect(() => {
+    const fetchSubmissions = async () => {
+      if (leftTab === "submission") {
+        try {
+          const res = await axios.get(
+            `http://localhost:3000/submissions/${id}`,
+            { withCredentials: true }
+          );
+          setSubmissions(res.data.submissions);
+        } catch (err) {
+          console.error("Error fetching submissions:", err.response?.data?.message);
+        }
+      }
+    };
+    fetchSubmissions();
+  }, [leftTab, id]);
+
+  const handlesubmit= async()=>{
+    try{
+      const data={
+        code:code,
+        problem:problem,
+      }
+      const response=await axios.post(`http://localhost:3000/submitcode/${id}`, data ,{
+        withCredentials: true,
+      });
+      // console.log(response);
+
+      setConsoleMsg(response.data.result);
+      setBottomTab("console");
+      // console.log(consoleMsg);
+    }
+    catch(err){
+      console.log('error in submitting the code');
+    }
+  }
 
   return (
     <div className="flex h-screen text-sm font-mono bg-gray-100">
@@ -80,9 +119,48 @@ const Ide = () => {
             </>
           ) : (
             <ul className="list-disc pl-4 text-sm">
-              <li>✅ Submission #1: Passed</li>
-              <li>❌ Submission #2: Failed on testcase 3</li>
-              <li>✅ Submission #3: Passed</li>
+              {submissions.length === 0 ? (
+                <li className="text-gray-500">No submissions yet.</li>
+              ): (submissions?.map((item,index)=>(
+                  <div
+                    key={index}
+                    onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                    className={`p-4 mb-4 rounded-lg shadow-md cursor-pointer transition-transform transform hover:scale-[1.01] ${
+                      item.verdict === "Accepted"
+                        ? "bg-green-50 border-l-4 border-green-500"
+                        : "bg-red-50 border-l-4 border-red-500"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <h3 className="font-semibold text-gray-800">
+                        {item.verdict === "Accepted" ? "✅" : "❌"} Submission #{index + 1}
+                      </h3>
+                      <span
+                        className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                          item.verdict === "Accepted"
+                            ? "bg-green-200 text-green-800"
+                            : "bg-red-200 text-red-800"
+                        }`}
+                      >
+                        {item.verdict}
+                      </span>
+                    </div>
+
+                    <div className="text-xs text-gray-600">
+                      <span className="mr-4">🕒 {new Date(item.submittedAt).toLocaleString()}</span>
+                    </div>
+
+                    {expandedIndex === index && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-gray-800 mb-1">Submitted Code:</h4>
+                        <pre className="bg-gray-900 text-green-200 p-3 rounded text-sm overflow-auto max-h-60 whitespace-pre-wrap">
+                          {item.code}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+                )))
+              }
             </ul>
           )}
         </div>
@@ -120,7 +198,22 @@ const Ide = () => {
             />
           )}
           {bottomTab === "output" && <pre>{output}</pre>}
-          {bottomTab === "console" && <pre>{consoleMsg}</pre>}
+          {bottomTab === "console" && <div>
+            {Object.entries(consoleMsg).map(([key, verdict], index) => (
+                <div
+                  key={index}
+                  className={`m-1 p-2 w-1/2 ${
+                    (verdict === "accepted")
+                      ? "bg-green-100 text-green-900"
+                      : (verdict === "rejected")
+                      ? "bg-red-100 text-red-800"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  <span className="capitalize">{key}: {verdict}</span>
+                </div>
+            ))}
+            </div>}
         </div>
 
         <div className="flex gap-4 p-4 bg-white border-t">
@@ -131,6 +224,7 @@ const Ide = () => {
           </button>
           <button
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            onClick={handlesubmit}
           >
             Submit
           </button>

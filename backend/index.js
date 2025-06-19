@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const Isloggedin= require('./middlewares/Isloggedin.js');
+const Submissions = require("./models/Submissions.js");
+
 dotenv.config();
 
 const app=express();
@@ -168,6 +170,52 @@ app.get("/problem/:id",Isloggedin,async (req, res) => {
       return res.status(404).json({ success: false, message: "Problem not found" });
     }
     res.status(200).json({ success: true, problem });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.get("/submissions/:id",Isloggedin,async (req, res) => {
+  try {
+    const submissions = await Submissions.find({ user: req.curruser.id, problem: req.params.id });
+    // console.log(submissions)
+    if (!submissions) {
+      return res.status(404).json({ success: false, message: "submissions not found" });
+    }
+    res.status(200).json({ success: true, submissions });
+
+  } catch (err) {
+    // console.error(err);
+    res.status(500).json({ success: false, message: "cant fetch submissions" });
+  }
+});
+
+app.post("/submitcode/:id",Isloggedin,async (req, res) => {
+  try {
+
+    const {code,problem}=req.body;
+
+    const data={
+      Test1:"accepted",
+      Test2:"accepted",
+      Test3:"rejected",
+    }
+
+    const verdict = Object.values(data).includes("rejected")
+      ? "Rejected"
+      : "Accepted";
+    
+    const addedsubmission= await Submissions.create({
+      user:req.curruser.id,
+      problem:problem._id,
+      code:code,
+      verdict,
+    })
+
+    // console.log(addedsubmission);
+    res.status(200).json({success:true, verdict ,message: "Code submitted",result:data,})
 
   } catch (err) {
     console.error(err);
