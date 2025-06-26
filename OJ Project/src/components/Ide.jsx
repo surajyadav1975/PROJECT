@@ -8,7 +8,7 @@ const Ide = () => {
   const [problem, setProblem] = useState(null);
   const [code, setCode] = useState("");
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState("hi");
   const [consoleMsg, setConsoleMsg] = useState({});
   const [submissions,setSubmissions]=useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -48,22 +48,49 @@ const Ide = () => {
   }, [leftTab, id]);
 
   const handlesubmit= async()=>{
+    const userId = localStorage.getItem('userId');
     try{
       const data={
         code:code,
-        problem:problem,
+        id,
+        userId,
       }
-      const response=await axios.post(`http://localhost:3000/submitcode/${id}`, data ,{
+      const response=await axios.post(`http://localhost:8752/submit`, data ,{
         withCredentials: true,
       });
-      // console.log(response);
 
-      setConsoleMsg(response.data.result);
+      setConsoleMsg(response.data.results);
       setBottomTab("console");
-      // console.log(consoleMsg);
     }
     catch(err){
+      // if(err.response.status === 400){
+      //   setOutput(err.response.data.message);
+      //   setBottomTab("output");
+      // }
       console.log('error in submitting the code');
+    }
+  }
+
+  const handlerun= async()=>{
+    try{
+      const data={
+        code:code,
+        input,
+      }
+
+      const response=await axios.post(`http://localhost:8752/run`, data ,{
+        withCredentials: true,
+      });
+
+      setOutput(response.data.output.output);
+      setBottomTab("output");
+    }
+    catch(err){
+      if(err.response.status === 400){
+        setOutput(err.response.data.message);
+        setBottomTab("output");
+      }
+      console.log('error in running the code');
     }
   }
 
@@ -197,7 +224,9 @@ const Ide = () => {
               onChange={(e) => setInput(e.target.value)}
             />
           )}
-          {bottomTab === "output" && <pre>{output}</pre>}
+          {bottomTab === "output" && <div>
+            <span className="capitalize">{output}</span>
+          </div>}
           {bottomTab === "console" && <div>
             {Object.entries(consoleMsg).map(([key, verdict], index) => (
                 <div
@@ -219,6 +248,7 @@ const Ide = () => {
         <div className="flex gap-4 p-4 bg-white border-t">
           <button
             className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            onClick={handlerun}
           >
             Run
           </button>

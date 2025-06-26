@@ -82,6 +82,7 @@ app.post("/login",async (req,res)=>{
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
+    // console.log(user);
     if (!user) {
       return res.status(401).json({success: false,message: "Invalid email or password"});
     }
@@ -100,7 +101,7 @@ app.post("/login",async (req,res)=>{
           sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',      
           maxAge: 24 * 60 * 60 * 1000, 
         });
-        return res.status(200).json({message:"LoogedIN"});
+        return res.status(200).json({message:"LoogedIN",userid:user._id});
       }
       else{
         return res.status(400).json({message:"incorrect credentials"});
@@ -162,6 +163,49 @@ app.get("/problemlist",Isloggedin,async (req,res)=>{
   }
 })
 
+app.put("/edit/:id",Isloggedin,async (req,res)=>{
+
+  try {
+        const { id } = req.params;
+        const { title, tag, difficulty, description, testcases } = req.body;
+
+        const problem = await Prob.findById(id);
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found.' });
+        }
+
+        problem.title = title;
+        problem.tag = tag;
+        problem.difficulty = difficulty;
+        problem.description = description;
+        problem.testcases = testcases;
+        await problem.save();
+
+        res.json({ message: 'Problem updated successfully.' });
+    } catch (err) {
+        console.error('Error updating problem:', err);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+})
+
+app.delete("/delete/:id",Isloggedin,async (req,res)=>{
+
+   try {
+        const { id } = req.params;
+
+        const problem = await Prob.findById(id);
+        if (!problem) {
+            return res.status(404).json({ message: 'Problem not found.' });
+        }
+
+        await Prob.findByIdAndDelete(id);
+        res.json({ message: 'Problem deleted successfully.' });
+    } catch (err) {
+        console.error('Error deleting problem:', err);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+})
+
 app.get("/problem/:id",Isloggedin,async (req, res) => {
   try {
     const problem = await Prob.findById(req.params.id);
@@ -192,43 +236,36 @@ app.get("/submissions/:id",Isloggedin,async (req, res) => {
   }
 });
 
-app.post("/submitcode/:id",Isloggedin,async (req, res) => {
+app.get("/userstats",Isloggedin,async (req, res) => {
   try {
+        const userId = req.curruser.id; 
 
-    const {code,problem}=req.body;
+        const submissions = await Submissions.find({user:userId});
 
-    const data={
-      Test1:"accepted",
-      Test2:"accepted",
-      Test3:"rejected",
+        const totalSubmissions = submissions.length;
+
+        const solvedProblems = new Set();
+
+        submissions.forEach((submission) => {
+            if (submission.verdict === 'Accepted') {
+                solvedProblems.add(submission.problem.toString());
+            }
+        });
+
+        const problemsSolved = solvedProblems.size;
+     
+        return res.json({
+            problemsSolved,
+            submissionsDone: totalSubmissions,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Server error' });
     }
-
-    const verdict = Object.values(data).includes("rejected")
-      ? "Rejected"
-      : "Accepted";
-    
-    const addedsubmission= await Submissions.create({
-      user:req.curruser.id,
-      problem:problem._id,
-      code:code,
-      verdict,
-    })
-
-    // console.log(addedsubmission);
-    res.status(200).json({success:true, verdict ,message: "Code submitted",result:data,})
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
 });
 
 app.get("/dashboard", Isloggedin, (req, res) => {
-  if (req.curruser.usertype === "Admin") {
-    res.status(200).send("Welcome Admin!");
-  } else {
-    res.status(400).send("You are not authorized to view this page.");
-  }
+    res.status(200).send(req.curruser);
 });
 
 app.listen(PORT, () => {

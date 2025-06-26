@@ -18,6 +18,7 @@ function Login() {
         withCredentials: true,
       });
       console.log("user loggedin");
+      localStorage.setItem('userId', response.data.userid);
       navigate('/');
     }
     catch(err){
@@ -36,16 +37,6 @@ function Login() {
           <h2 className="text-xl text-gray-500">To Our OJ Platform</h2>
 
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <input
-              placeholder="Username"
-              className='w-full p-3 border border-gray-300 rounded-md focus:outline-none'
-              {...register("username", 
-                { required: {value:true, message:"First name is required"}, 
-                minLength: {value:6, message:"Minimum length is 6"},})}
-            />
-            {errors.username && (
-              <p>{errors.username.message}</p>
-            )}
             <input
               placeholder="Email"
               className='w-full p-3 border border-gray-300 rounded-md focus:outline-none'
