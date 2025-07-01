@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const DBConnection = async () => {
+
     const MONGO_URI = process.env.MONGOURL;
     if (!MONGO_URI) {
         console.error("Error: MONGODB_URL environment variable is not set");

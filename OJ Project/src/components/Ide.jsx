@@ -8,12 +8,14 @@ const Ide = () => {
   const [problem, setProblem] = useState(null);
   const [code, setCode] = useState("");
   const [input, setInput] = useState("");
+  const [language, setLanguage] = useState("cpp");
   const [output, setOutput] = useState("hi");
   const [consoleMsg, setConsoleMsg] = useState({});
   const [submissions,setSubmissions]=useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
   const { id } = useParams();
+
 
 
   useEffect(() => {
@@ -47,11 +49,13 @@ const Ide = () => {
     fetchSubmissions();
   }, [leftTab, id]);
 
+
   const handlesubmit= async()=>{
     const userId = localStorage.getItem('userId');
     try{
       const data={
         code:code,
+        language,
         id,
         userId,
       }
@@ -75,6 +79,7 @@ const Ide = () => {
     try{
       const data={
         code:code,
+        language,
         input,
       }
 
@@ -97,6 +102,7 @@ const Ide = () => {
   return (
     <div className="flex h-screen text-sm font-mono bg-gray-100">
       <div className="w-1/3 border-r bg-white flex flex-col">
+        
         <div className="flex">
           <button
             onClick={() => setLeftTab("problem")}
@@ -194,6 +200,32 @@ const Ide = () => {
       </div>
 
       <div className="w-2/3 flex flex-col">
+
+        <div className="flex justify-between gap-4 p-4 bg-white">
+          <select 
+            onChange={(e) => setLanguage(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-yellow-500">
+            <option value="cpp">C++</option>
+            <option value="c">C</option>
+            <option value="py">Python</option>
+            <option value="js">JavaScript</option>
+          </select>
+          <div className="flex gap-4">
+            <button
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            onClick={handlerun}
+          >
+            Run
+          </button>
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            onClick={handlesubmit}
+          >
+            Submit
+          </button>
+          </div>
+        </div>
+
         <textarea
           className="flex-1 p-4 bg-gray-900 text-green-200 outline-none resize-none"
           value={code}
@@ -243,21 +275,6 @@ const Ide = () => {
                 </div>
             ))}
             </div>}
-        </div>
-
-        <div className="flex gap-4 p-4 bg-white border-t">
-          <button
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
-            onClick={handlerun}
-          >
-            Run
-          </button>
-          <button
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            onClick={handlesubmit}
-          >
-            Submit
-          </button>
         </div>
       </div>
     </div>
