@@ -207,6 +207,7 @@ const Ide = () => {
             className="border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-yellow-500">
             <option value="cpp">C++</option>
             <option value="c">C</option>
+            <option value="java">Java</option>
             <option value="py">Python</option>
             <option value="js">JavaScript</option>
           </select>

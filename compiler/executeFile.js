@@ -36,21 +36,8 @@ const executeFile = (filepath,input,language) => {
             });
         }
         else if (language === 'java') {
-            compile = spawn('javac', [filepath]);
-
-            compile.stderr.on('data', (data) => {
-                reject({ status: 'compilation error', message: data.toString() });
-            });
-
-            compile.on('exit', (code) => {
-                if (code !== 0) {
-                    return reject({ status: 'compilation error', message: 'Compilation failed' });
-                }
-
-                const className = path.basename(filepath).split('.')[0];
-                run = spawn('java', ['-cp', path.dirname(filepath), className]);
-                executeProgram(run, input, resolve, reject);
-            });
+            run = spawn('java', [filepath]);
+            executeProgram(run, input, resolve, reject);
         }
         else if (language === 'c') {
             const filename = `${jobID}.out`;
