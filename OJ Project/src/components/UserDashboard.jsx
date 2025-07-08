@@ -19,39 +19,29 @@ function UserDashboard({user}) {
     }, []);
 
     return (
-   <div className="max-w-4xl mx-auto p-8 bg-gradient-to-r from-blue-50 to-purple-100 shadow-2xl rounded-2xl mt-12 space-y-8">
-        <h2 className="text-4xl font-extrabold mb-6 text-center text-gray-800 tracking-wide">
+        <div className="w-full p-10 mx-auto font-serif bg-white shadow-2xl rounded-2xl border border-gray-700 space-y-12">
+            <h2 className="text-4xl font-extrabold text-center text-gray-900 tracking-wide">
             📊 User Dashboard
-        </h2>
+            </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">👤 Username</h3>
-                <p className="text-lg text-gray-600">{user.username}</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">🪪 Full Name</h3>
-                <p className="text-lg text-gray-600">{user.fullname}</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">📧 Email</h3>
-                <p className="text-lg text-gray-600">{user.email}</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">✅ Problems Solved</h3>
-                <p className="text-lg text-gray-600">{stats.problemsSolved || 0}</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105">
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">📄 Submissions Done</h3>
-                <p className="text-lg text-gray-600">{stats.submissionsDone || 0}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+                { label: '👤 Username', value: user.username },
+                { label: '🪪 Full Name', value: user.fullname },
+                { label: '📧 Email', value: user.email },
+                { label: '✅ Problems Solved', value: stats.problemsSolved || 0 },
+                { label: '📄 Submissions Done', value: stats.submissionsDone || 0 }
+            ].map((item, index) => (
+                <div
+                key={index}
+                className="bg-gray-900 p-6 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:scale-105 border border-gray-700"
+                >
+                <h3 className="text-lg font-semibold text-gray-300 mb-2 tracking-wide">{item.label}</h3>
+                <p className="text-2xl text-white font-bold break-words">{item.value}</p>
+                </div>
+            ))}
             </div>
         </div>
-    </div>
-
   )
 }
 

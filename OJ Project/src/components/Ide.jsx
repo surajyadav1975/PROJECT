@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import ReactMarkdown from 'react-markdown';
+import { SunIcon } from '@heroicons/react/24/solid'
+import Editor from "@monaco-editor/react";  
 
 const Ide = () => {
   const [leftTab, setLeftTab] = useState("problem");
   const [bottomTab, setBottomTab] = useState("input");
   const [problem, setProblem] = useState(null);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(`#include<bits/stdc++.h>
+using namespace std;
+
+int main(){
+    // Write your code here...
+    return 0;
+}`);
   const [input, setInput] = useState("");
   const [language, setLanguage] = useState("cpp");
-  const [output, setOutput] = useState("hi");
+  const [output, setOutput] = useState("");
+  const [aiReview, setAiReview] = useState("Get Ai Hints Here...");
   const [consoleMsg, setConsoleMsg] = useState({});
   const [submissions,setSubmissions]=useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [theme, setTheme] = useState("vs-dark");
 
   const { id } = useParams();
-
-
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -49,7 +58,62 @@ const Ide = () => {
     fetchSubmissions();
   }, [leftTab, id]);
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "vs-dark" ? "light" : "vs-dark"));
+  };
 
+
+  const handlelang =(e)=>{
+
+    setLanguage(e.target.value);
+
+    if(e.target.value=="cpp"){
+      setCode(`#include<bits/stdc++.h>
+using namespace std;
+
+int main(){
+    // Write your code here...
+    return 0;
+}`)
+    }
+    else if(e.target.value=="py"){
+      setCode(`# Write your code here...
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()`)
+    }
+    else if(e.target.value=="java"){
+      setCode(`// Write your code here...
+function main() {
+    
+}
+
+main();`)
+    }
+    else if(e.target.value=="c"){
+      setCode(`#include <stdio.h>
+
+int main() {
+    // Write your code here...
+    return 0;
+}`)
+    }
+    else if(e.target.value=="js"){
+      setCode(`// Write your code here...
+function main() {
+    console.log("Hello, World!");
+}
+
+main();`)
+    }
+    else{
+      setCode(`// Write your code here...`)
+    }
+
+
+  }
   const handlesubmit= async()=>{
     const userId = localStorage.getItem('userId');
     try{
@@ -67,10 +131,6 @@ const Ide = () => {
       setBottomTab("console");
     }
     catch(err){
-      // if(err.response.status === 400){
-      //   setOutput(err.response.data.message);
-      //   setBottomTab("output");
-      // }
       console.log('error in submitting the code');
     }
   }
@@ -99,10 +159,36 @@ const Ide = () => {
     }
   }
 
+  const handleai =async()=>{
+
+    const data={
+      problem:problem.description,
+    }
+    try{
+      const response=await axios.post('http://localhost:3000/aihints',data,{
+        withCredentials: true,
+      })
+
+      const reviewText = response.data.review.candidates[0].content.parts[0].text;
+      if (reviewText) {
+        setAiReview(reviewText);
+      } else {
+        setAiReview("Some error ocurred, By the way You shouldn't be using AI it's Bad Practice");
+      }
+
+      setBottomTab("AI");
+    }
+    catch(err){
+      console.log('error in getting hints',err);
+    }
+  }
+  
+
+
   return (
-    <div className="flex h-screen text-sm font-mono bg-gray-100">
+    <div className="flex h-screen text-sm font-serif bg-gray-100">
+
       <div className="w-1/3 border-r bg-white flex flex-col">
-        
         <div className="flex">
           <button
             onClick={() => setLeftTab("problem")}
@@ -203,7 +289,7 @@ const Ide = () => {
 
         <div className="flex justify-between gap-4 p-4 bg-white">
           <select 
-            onChange={(e) => setLanguage(e.target.value)}
+            onChange={handlelang}
             className="border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-yellow-500">
             <option value="cpp">C++</option>
             <option value="c">C</option>
@@ -213,29 +299,54 @@ const Ide = () => {
           </select>
           <div className="flex gap-4">
             <button
-            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            className="bg-sky-500 shadow-xl/20 text-white px-4 py-2 rounded hover:bg-sky-600"
+            onClick={handleai}
+          >
+            Get AI Hint's
+          </button>
+            <button
+            className="bg-yellow-500 shadow-xl/20 text-white px-4 py-2 rounded hover:bg-yellow-600"
             onClick={handlerun}
           >
             Run
           </button>
           <button
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            className="bg-green-500 shadow-xl/20 text-white px-4 py-2 rounded hover:bg-green-700"
             onClick={handlesubmit}
           >
             Submit
           </button>
+          <button
+            className={`shadow-xl/20 border px-1 rounded cursor-pointer transition-colors duration-100 ${
+              theme === "vs-dark" ? "bg-white hover:bg-gray-400" : "bg-black hover:bg-gray-600"
+            }`}
+            onClick={toggleTheme}
+          >
+            <SunIcon className={`h-6 w-6 transition-colors duration-100 ${theme === "vs-dark" ? "text-black" : "text-white"}`} />
+          </button>
+          
           </div>
         </div>
 
-        <textarea
-          className="flex-1 p-4 bg-gray-900 text-green-200 outline-none resize-none"
+        <Editor
+          height="70vh"
+          width="100%"
+          language={language === "py" ? "python" : language === "js" ? "javascript" : language}
+          theme={theme}
           value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="// Write your code here..."
+          onChange={(value) => {
+            setCode(value);
+          }}
+          options={{
+            fontSize: 14,
+            minimap: { enabled: false },
+            fontFamily: 'Fira Code, monospace',
+            automaticLayout: true,
+          }}
         />
 
         <div className="flex bg-gray-800 text-white">
-          {["input", "output", "console"].map((tab) => (
+          {["input", "output", "console", "AI"].map((tab) => (
             <button
               key={tab}
               onClick={() => setBottomTab(tab)}
@@ -275,6 +386,9 @@ const Ide = () => {
                   <span className="capitalize">{key}: {verdict}</span>
                 </div>
             ))}
+            </div>}
+          {bottomTab === "AI" && <div className="p-2 rounded-sm max-w-none bg-white font-sans text-gray-700">
+              <ReactMarkdown>{aiReview}</ReactMarkdown>
             </div>}
         </div>
       </div>

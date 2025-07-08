@@ -54,8 +54,7 @@ const Dashboard = () => {
         <div className="flex min-h-screen bg-gray-100">
             {user.usertype === 'Admin' ? (
                 <>
-                    <div className="w-64 bg-gray-900 text-white flex flex-col p-6 space-y-6 shadow-lg">
-                        <h2 className="text-3xl font-bold text-center mb-8">Admin Panel</h2>
+                    <div className="w-64 bg-gray-900 font-serif text-white flex flex-col p-6 space-y-6 shadow-lg">
                         <button
                             onClick={() => setActiveSection("create")}
                             className={`px-4 py-3 rounded text-left hover:bg-gray-800 transition ${activeSection === "create" ? "bg-gray-800" : ""}`}
@@ -70,20 +69,24 @@ const Dashboard = () => {
                         </button>
                     </div>
 
-                    <div className="flex-1 p-8 overflow-y-auto">
+                    <div className="flex-1 p-8 font-serif overflow-y-auto">
                         <h1 className="text-4xl font-bold mb-8">Welcome, {user.fullname}</h1>
 
                         {activeSection === "create" && <CreateProblem />}
                         {activeSection === "problems" && (
                             <div className="space-y-4">
                                 <table className="w-full border border-gray-300 rounded-lg shadow-md overflow-hidden">
-                                    <thead className="bg-gray-200">
-                                        <tr>
-                                            <th className="py-3 px-4 text-left">ID</th>
-                                            <th className="py-3 px-4 text-left">Title</th>
-                                            <th className="py-3 px-4 text-left">Edit</th>
-                                            <th className="py-3 px-4 text-left">Delete</th>
-                                        </tr>
+                                    <thead>
+                                    <tr className="bg-gradient-to-r from-gray-800 to-gray-700 text-white rounded-lg">
+                                        <th className="py-3 px-4 text-left text-base font-semibold rounded-l-lg">
+                                        ID
+                                        </th>
+                                        <th className="py-3 px-4 text-left text-base font-semibold">Title</th>
+                                        <th className="py-3 px-4 text-left text-base font-semibold">Edit</th>
+                                        <th className="py-3 px-4 text-left text-base font-semibold rounded-r-lg">
+                                        Delete
+                                        </th>
+                                    </tr>
                                     </thead>
                                     <tbody>
                                         {problems.map((problem, index) => (

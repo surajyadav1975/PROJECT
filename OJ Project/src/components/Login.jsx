@@ -29,50 +29,54 @@ function Login() {
   
 
   return (
-    <div className="min-h-screen flex">
+     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-100 p-4">
+      <div className="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-lg space-y-6">
+        <h1 className="text-3xl font-bold text-center text-blue-600">Welcome Back!</h1>
+        <h2 className="text-lg text-gray-500 text-center mb-6">Log in to your OJ Platform account</h2>
 
-      <div className="flex items-center w-full mt-10 justify-center p-8">
-        <div className="max-w-md space-y-4 p-10 rounded-lg shadow-xl/30">
-          <h1 className="text-3xl font-bold text-black">Hello & Welcome</h1>
-          <h2 className="text-xl text-gray-500">To Our OJ Platform</h2>
-
-          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col">
             <input
               placeholder="Email"
-              className='w-full p-3 border border-gray-300 rounded-md focus:outline-none'
-              {...register("email", { required: {value:true, message:"Email is required"}, 
-                pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Invalid email format',
-                    },})}
+              className="input-box"
+              {...register("email", {
+                required: { value: true, message: "Email is required" },
+                pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email format" }
+              })}
             />
-            {errors.email && (
-              <p>{errors.email.message}</p>
-            )}
-            <input
-              placeholder="Password"
-              className='w-full p-3 border border-gray-300 rounded-md focus:outline-none'
-              {...register("password", { required: {value:true, message:"Password is required"}, minLength: {value:8, message:"Atleast 8 char"} })}
-            />
-            {errors.password && (
-              <p>{errors.password.message}</p>
-            )}
-            <input className='w-full bg-blue-400 p-3 border border-gray-300 rounded-md' type="submit" />
-          </form>
-
-          <div className="flex items-center my-4">
-            <div className="flex-grow h-px bg-gray-300"></div>
-            <span className="px-3 text-gray-500">or</span>
-            <div className="flex-grow h-px bg-gray-300"></div>
+            {errors.email && <p className="error-msg">{errors.email.message}</p>}
           </div>
 
-          <p className="text-center text-gray-500">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-500 hover:underline">
-              Sign Up
-            </Link>
-          </p>
+          <div className="flex flex-col">
+            <input
+              placeholder="Password"
+              type="password"
+              className="input-box"
+              {...register("password", {
+                required: { value: true, message: "Password is required" },
+                minLength: { value: 8, message: "At least 8 characters" }
+              })}
+            />
+            {errors.password && <p className="error-msg">{errors.password.message}</p>}
+          </div>
+
+          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+            Log In
+          </button>
+        </form>
+
+        <div className="flex items-center my-6">
+          <div className="flex-grow h-px bg-gray-300"></div>
+          <span className="px-4 text-gray-400">or</span>
+          <div className="flex-grow h-px bg-gray-300"></div>
         </div>
+
+        <p className="text-center text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-blue-500 font-medium hover:underline">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );

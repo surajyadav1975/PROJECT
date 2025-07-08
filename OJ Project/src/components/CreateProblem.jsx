@@ -61,96 +61,107 @@ const CreateProblem = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-center">Create a Problem</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <label className="block font-medium">Title</label>
-          <input {...register("title", { required: true })} className="w-full border px-4 py-2 rounded" />
-          {errors.title && <p className="text-red-500 text-sm">Title is required</p>}
-        </div>
+  <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-gray-700">
+    <h2 className="text-4xl font-bold mb-8 text-center text-gray-900">📋 Create a Problem</h2>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
-        <div>
-          <label className="block font-medium">Tag</label>
-          <input {...register("tag", { required: true })} className="w-full border px-4 py-2 rounded" />
-          {errors.tag && <p className="text-red-500 text-sm">Tag is required</p>}
-        </div>
+      <div>
+        <label className="block font-semibold text-gray-700 mb-2">Title</label>
+        <input {...register("title", { required: true })} 
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        {errors.title && <p className="text-red-500 text-sm mt-1">Title is required</p>}
+      </div>
 
-        <div>
-          <label className="block font-medium">Difficulty</label>
-          <select {...register("difficulty", { required: true })} className="w-full border px-4 py-2 rounded">
-            <option value="">Select</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
-        </div>
+      <div>
+        <label className="block font-semibold text-gray-700 mb-2">Tag</label>
+        <input {...register("tag", { required: true })} 
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        {errors.tag && <p className="text-red-500 text-sm mt-1">Tag is required</p>}
+      </div>
 
-        <div>
-          <label className="block font-medium">Description</label>
-          <textarea {...register("description", { required: true })} className="w-full border px-4 py-2 rounded" rows={4} />
-        </div>
-        <div>
-          <label className="block font-bold mb-2 text-lg">Test Cases</label>
-          {testcases.map((tc, index) => (
-            <div key={index} className="mb-4 p-4 border rounded space-y-2 bg-gray-50">
-              <div>
-                <label className="block">Input</label>
-                <textarea
-                  value={tc.input}
-                  onChange={(e) => handleTestcaseChange(index, "input", e.target.value)}
-                  className="w-full border px-3 py-1 rounded"
-                  rows={2}
-                />
-              </div>
+      <div>
+        <label className="block font-semibold text-gray-700 mb-2">Difficulty</label>
+        <select {...register("difficulty", { required: true })}
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">Select</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
 
-              <div>
-                <label className="block">Expected Output</label>
-                <textarea
-                  value={tc.output}
-                  onChange={(e) => handleTestcaseChange(index, "output", e.target.value)}
-                  className="w-full border px-3 py-1 rounded"
-                  rows={2}
-                />
-              </div>
+      <div>
+        <label className="block font-semibold text-gray-700 mb-2">Description</label>
+        <textarea {...register("description", { required: true })} 
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" rows={4} />
+      </div>
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={tc.visible}
-                  onChange={(e) => handleTestcaseChange(index, "visible", e.target.checked)}
-                />
-                <label>Visible to user?</label>
-
-                {testcases.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTestcase(index)}
-                    className="ml-auto text-red-600 text-sm"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
+      <div>
+        <label className="block font-bold text-gray-800 mb-4 text-lg">Test Cases</label>
+        {testcases.map((tc, index) => (
+          <div key={index} className="mb-6 p-4 border border-gray-300 rounded-lg bg-gray-50 space-y-4 shadow-sm">
+            <div>
+              <label className="block font-semibold text-gray-700 mb-1">Input</label>
+              <textarea
+                value={tc.input}
+                onChange={(e) => handleTestcaseChange(index, "input", e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={2}
+              />
             </div>
-          ))}
 
-          <button
-            type="button"
-            onClick={handleAddTestcase}
-            className="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
-          >
-            ➕ Add Testcase
-          </button>
-        </div>
+            <div>
+              <label className="block font-semibold text-gray-700 mb-1">Expected Output</label>
+              <textarea
+                value={tc.output}
+                onChange={(e) => handleTestcaseChange(index, "output", e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={2}
+              />
+            </div>
 
-        <div className="text-center">
-          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-            Create Problem
-          </button>
-        </div>
-      </form>
-    </div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                checked={tc.visible}
+                onChange={(e) => handleTestcaseChange(index, "visible", e.target.checked)}
+                className="w-4 h-4"
+              />
+              <label className="text-gray-700 text-sm">Visible to user?</label>
+
+              {testcases.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveTestcase(index)}
+                  className="ml-auto text-red-600 text-sm hover:underline"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={handleAddTestcase}
+          className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+        >
+          ➕ Add Testcase
+        </button>
+      </div>
+
+      <div className="text-center">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-8 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Create Problem
+        </button>
+      </div>
+    </form>
+  </div>
+
   );
 };
 

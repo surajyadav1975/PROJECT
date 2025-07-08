@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const Isloggedin= require('../middlewares/Isloggedin.js');
 const Submissions = require("../models/Submissions.js");
+const { GoogleGenAI } = require("@google/genai");
+dotenv.config();
 
 exports.signUp=async (req,res)=>{
     try{
@@ -239,4 +241,26 @@ exports.userStats=async (req, res) => {
         console.error(err);
         return res.status(500).json({ message: 'Server error' });
     }
+}
+
+exports.aihints=async (req, res) => {
+  const {problem}=req.body;
+  if (problem === undefined) {
+    return res.status(404).json({ success: false, error: "Empty code!" });
+  }
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_AI_KEY });
+
+    const review = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: "Read the following problem and provide a short and concise review and observation of the question that can help me reach the answer." + problem,
+    });
+
+    // console.log(review);
+
+    res.json({ review });
+  } catch (error) {
+    res.status(500).json({ error: "Error in AI review, error: " + error.message });
+  }
 }
