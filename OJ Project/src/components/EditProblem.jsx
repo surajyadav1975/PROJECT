@@ -16,6 +16,7 @@ const EditProblem = () => {
             testcases: []
         }
     });
+    const apiurl = import.meta.env.VITE_BACKEND_URL;
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -27,7 +28,7 @@ const EditProblem = () => {
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                 const res = await axios.get(`http://localhost:3000/problem/${id}`, {
+                 const res = await axios.get(`${apiurl}/problem/${id}`, {
                     withCredentials: true,
                 });
                 const problem = res.data.problem;
@@ -53,7 +54,7 @@ const EditProblem = () => {
 
     const onSubmit = async (data) => {
         try {
-            await axios.put(`http://localhost:3000/edit/${id}`, data, { withCredentials: true });
+            await axios.put(`${apiurl}/edit/${id}`, data, { withCredentials: true });
             alert("Problem updated successfully!");
             navigate('/dashboard');
         } catch (err) {

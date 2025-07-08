@@ -4,11 +4,11 @@ import axios from 'axios';
 
 function UserDashboard({user}) {
      const [stats, setStats] = useState({ problemsSolved: 0, submissionsDone: 0 });
-
+    const apiurl = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/userstats', { withCredentials: true });
+                const res = await axios.get(`${apiurl}/userstats`, { withCredentials: true });
                 setStats(res.data);
             } catch (err) {
                 console.error('Error fetching stats:', err);

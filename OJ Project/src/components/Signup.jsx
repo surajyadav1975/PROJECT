@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Signup() {
   const navigate=useNavigate();
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
   const {
     register,
     watch,
@@ -16,7 +17,7 @@ function Signup() {
 
   const onSubmit = async(data) => {
     try{
-      const response= await axios.post("http://localhost:3000/signup", data, { withCredentials: true });
+      const response= await axios.post(`${apiurl}/signup`, data, { withCredentials: true });
       console.log("user created");
       navigate('/');
     }

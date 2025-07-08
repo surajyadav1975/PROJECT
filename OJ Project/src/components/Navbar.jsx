@@ -8,9 +8,10 @@ import axios from 'axios';
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate=useNavigate();
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
   const handlelogout=async ()=>{
      try {
-      const response = await axios.get('http://localhost:3000/logout', {
+      const response = await axios.get(`${apiurl}/logout`, {
         withCredentials: true, 
       });
 

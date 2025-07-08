@@ -6,11 +6,11 @@ import { useNavigate } from 'react-router-dom';
 const ProblemList = () => {
   const navigate=useNavigate();
   const [problems, setproblems] = useState([]);
-
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
     const getproblemlist = async () => {
       try {
-        const p = await axios.get("http://localhost:3000/problemlist", {
+        const p = await axios.get(`${apiurl}/problemlist`, {
           withCredentials: true,
         });
         setproblems(p.data.prob);

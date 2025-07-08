@@ -27,10 +27,13 @@ int main(){
 
   const { id } = useParams();
 
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
+  const compilerurl = import.meta.env.VITE_COMPILER_URL;
+
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/problem/${id}`, {
+        const res = await axios.get(`${apiurl}/problem/${id}`, {
           withCredentials: true,
         });
         setProblem(res.data.problem);
@@ -46,7 +49,7 @@ int main(){
       if (leftTab === "submission") {
         try {
           const res = await axios.get(
-            `http://localhost:3000/submissions/${id}`,
+            `${apiurl}/submissions/${id}`,
             { withCredentials: true }
           );
           setSubmissions(res.data.submissions);
@@ -123,7 +126,7 @@ main();`)
         id,
         userId,
       }
-      const response=await axios.post(`http://localhost:8752/submit`, data ,{
+      const response=await axios.post(`${compilerurl}/submit`, data ,{
         withCredentials: true,
       });
 
@@ -143,7 +146,7 @@ main();`)
         input,
       }
 
-      const response=await axios.post(`http://localhost:8752/run`, data ,{
+      const response=await axios.post(`${compilerurl}/run`, data ,{
         withCredentials: true,
       });
 
@@ -165,7 +168,7 @@ main();`)
       problem:problem.description,
     }
     try{
-      const response=await axios.post('http://localhost:3000/aihints',data,{
+      const response=await axios.post(`${apiurl}/aihints`,data,{
         withCredentials: true,
       })
 

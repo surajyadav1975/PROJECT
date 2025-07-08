@@ -9,11 +9,12 @@ const Dashboard = () => {
     const [user, setUser] = useState(null);
     const [problems, setProblems] = useState([]);
     const [activeSection, setActiveSection] = useState("problems");
+    const apiurl = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
         const getProblemList = async () => {
             try {
-                const p = await axios.get("http://localhost:3000/problemlist", { withCredentials: true });
+                const p = await axios.get(`${apiurl}/problemlist`, { withCredentials: true });
                 setProblems(p.data.prob);
             } catch (err) {
                 console.log("Error fetching problems:", err.response?.data?.message);
@@ -23,7 +24,7 @@ const Dashboard = () => {
 
         const fetchUser = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/dashboard', { withCredentials: true });
+                const res = await axios.get(`${apiurl}/dashboard`, { withCredentials: true });
                 if (res.data.usertype === 'Admin') {
                     getProblemList();
                 }
@@ -39,7 +40,7 @@ const Dashboard = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:3000/delete/${id}`, { withCredentials: true });
+            await axios.delete(`${apiurl}/delete/${id}`, { withCredentials: true });
             alert('Problem deleted successfully.');
             setProblems(problems.filter(problem => problem._id !== id));
         } catch (err) {

@@ -11,10 +11,10 @@ function Login() {
     formState: { errors },
     handleSubmit,
   } = useForm()
-
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
   const onSubmit = async(data) => {
     try{
-      const response= await axios.post("http://localhost:3000/login", data, {
+      const response= await axios.post(`${apiurl}/login`, data, {
         withCredentials: true,
       });
       console.log("user loggedin");

@@ -4,11 +4,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const CreateProblem = () => {
   const navigate=useNavigate();
-
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
   useEffect(()=>{
     const checkadmin=async ()=>{
       try {
-        const res = await axios.get("http://localhost:3000/dashboard", {
+        const res = await axios.get(`${apiurl}/dashboard`, {
           withCredentials: true,
         });
       } catch (err) {
@@ -48,7 +48,7 @@ const CreateProblem = () => {
 
 
     try {
-      const response=await axios.post("http://localhost:3000/createproblem", problemPayload,
+      const response=await axios.post(`${apiurl}/createproblem`, problemPayload,
         { withCredentials: true }
       );
       console.log(response.data.message);

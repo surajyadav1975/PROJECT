@@ -23,6 +23,8 @@ int main(){
   const [showInviteList, setShowInviteList] = useState(false);
   const userName = localStorage.getItem('userName');
   
+  const apiurl = import.meta.env.VITE_BACKEND_URL;
+  const compilerurl = import.meta.env.VITE_COMPILER_URL;
 
   useEffect(() => {
     const handleConnect = () => {
@@ -93,7 +95,7 @@ int main(){
 
   const handleRun = async () => {
     try {
-      const response = await axios.post(`http://localhost:8752/run`, { code, language, input }, { withCredentials: true });
+      const response = await axios.post(`${compilerurl}/run`, { code, language, input }, { withCredentials: true });
       setOutput(response.data.output.output);
     } catch (err) {
       setOutput(err.response?.data?.message || 'Error running code');
