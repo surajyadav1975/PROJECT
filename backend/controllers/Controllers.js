@@ -40,8 +40,8 @@ exports.signUp=async (req,res)=>{
     
             res.cookie("token",token,{
               httpOnly: true,      
-              secure: process.env.NODE_ENV === "production",         
-              sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',          
+              secure: true,         
+              sameSite: 'None', 
               maxAge: 24 * 60 * 60 * 1000, 
             });
             
@@ -77,8 +77,8 @@ exports.logIn=async (req,res)=>{
 
         res.cookie("token",token,{
           httpOnly: true,      
-          secure: process.env.NODE_ENV === "production",         
-          sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',      
+          secure: true,         
+          sameSite: 'None', 
           maxAge: 24 * 60 * 60 * 1000, 
         });
         return res.status(200).json({message:"LoogedIN",userid:user._id,username:user.username});
@@ -96,9 +96,9 @@ exports.logIn=async (req,res)=>{
 exports.logOut=async (req,res)=>{
     res
     .clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",         
-      sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',    
+      httpOnly: true,      
+      secure: true,         
+      sameSite: 'None',    
     })
     .status(200)
     .json({

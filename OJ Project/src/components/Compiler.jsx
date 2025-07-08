@@ -3,6 +3,7 @@ import axios from "axios";
 import Editor from "@monaco-editor/react";
 import { SunIcon } from '@heroicons/react/24/solid';
 import socket from "../socket/Socket";
+import { useNavigate } from "react-router";
 
 const Compiler = () => {
   const [code, setCode] = useState(`#include<bits/stdc++.h>
@@ -12,6 +13,7 @@ int main(){
     // Write your code here...
     return 0;
 }`);
+  const navigate=useNavigate();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [language, setLanguage] = useState("cpp");
@@ -25,6 +27,19 @@ int main(){
   
   const apiurl = import.meta.env.VITE_BACKEND_URL;
   const compilerurl = import.meta.env.VITE_COMPILER_URL;
+
+  useEffect(() => {
+        const checklogin = async () => {
+            try {
+                const p = await axios.get(`${apiurl}/dashboard`, { withCredentials: true });
+            } catch (err) {
+                alert("Not loggedin, Try logging in");
+                navigate('/login');
+            }
+        };
+
+        checklogin();
+    }, [navigate]);
 
   useEffect(() => {
     const handleConnect = () => {

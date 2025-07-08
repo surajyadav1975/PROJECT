@@ -2,7 +2,8 @@ const jwt=require("jsonwebtoken");
 const User=require("../models/User");
 
 module.exports=async function(req,res,next){
-    // console.log(req.cookies);
+    // console.log(req.cookies.token);
+    // console.log(req.headers);
     if(!req.cookies.token){
         return res.status(400).json({message:"you havent loggedin, try logging in"});
     }
