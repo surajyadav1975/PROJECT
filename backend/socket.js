@@ -17,9 +17,9 @@ function setupSocket(server) {
     //     console.log(`📡 Event received: ${event}`, args);
     // });
 
-    socket.on('user-online', (userId) => {
-      onlineUsers[socket.id] = userId;
-      console.log(`User ${userId} is online`);
+    socket.on('user-online', (userName) => {
+      onlineUsers[socket.id] = userName;
+      console.log(`User ${userName} is online`);
       io.emit('update-online-users', Object.values(onlineUsers));
     });
 
@@ -59,7 +59,7 @@ function setupSocket(server) {
       
       if (fromSocketId) {
         const currid=socket.id;
-        const roomId = `${fromSocketId}-${socket.id}-${problemId}`;
+        const roomId = `${fromSocketId}-${socket.id}`;
 
         socket.join(roomId);
 

@@ -81,7 +81,7 @@ exports.logIn=async (req,res)=>{
           sameSite: process.env.NODE_ENV === "production"? 'None' : 'Lax',      
           maxAge: 24 * 60 * 60 * 1000, 
         });
-        return res.status(200).json({message:"LoogedIN",userid:user._id});
+        return res.status(200).json({message:"LoogedIN",userid:user._id,username:user.username});
       }
       else{
         return res.status(400).json({message:"incorrect credentials"});

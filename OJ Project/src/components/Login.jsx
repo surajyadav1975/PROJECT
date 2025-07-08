@@ -19,6 +19,7 @@ function Login() {
       });
       console.log("user loggedin");
       localStorage.setItem('userId', response.data.userid);
+      localStorage.setItem('userName', response.data.username);
       navigate('/');
     }
     catch(err){

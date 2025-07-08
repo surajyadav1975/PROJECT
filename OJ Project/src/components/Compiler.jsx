@@ -21,17 +21,17 @@ int main(){
   const [invitePrompt, setInvitePrompt] = useState(null);
   const [inviteLoading, setInviteLoading] = useState(false);
   const [showInviteList, setShowInviteList] = useState(false);
-  const userId = localStorage.getItem('userId');
+  const userName = localStorage.getItem('userName');
   
 
   useEffect(() => {
     const handleConnect = () => {
-            console.log('🎉 Connected successfully with ID:', socket.id);
-            socket.emit('user-online', userId);
+            console.log('🎉 Connected successfully with ID:', socket.id, userName);
+            socket.emit('user-online', userName);
         };
 
         const handleUpdateOnlineUsers = (users) => {
-            setOnlineUsers(users.filter(user => user !== userId));
+            setOnlineUsers(users.filter(user => user !== userName));
             console.log('Updated online users:', users);
         };
 
@@ -84,11 +84,11 @@ int main(){
             socket.off('receive-code', handleReceiveCode);
             socket.off('disconnect', handleDisconnect);
         };
-    }, [userId]);
+    }, [userName]);
 
   const handleSendInvite = (toUserId) => {
     setInviteLoading(true);
-    socket.emit('send-invite', { fromUserId: userId, toUserId });
+    socket.emit('send-invite', { fromUserId: userName, toUserId });
   };
 
   const handleRun = async () => {
@@ -194,13 +194,16 @@ int main(){
               <button
                 className="bg-green-500 text-white px-4 py-1 rounded"
                 onClick={() => {
-                  socket.emit('accept-invite', { fromUserId: invitePrompt.fromUserId, toUserId: userId });
+                  socket.emit('accept-invite', { fromUserId: invitePrompt.fromUserId, toUserId: userName });
                   setInvitePrompt(null);
                 }}
               >Accept</button>
               <button
                 className="bg-red-500 text-white px-4 py-1 rounded"
-                onClick={() => setInvitePrompt(null)}
+                onClick={() => {
+                  socket.emit('decline-invite', { fromUserId: invitePrompt.fromUserId, toUserId: userName });
+                  setInvitePrompt(null);
+                }}
               >Decline</button>
             </div>
           </div>
@@ -208,7 +211,7 @@ int main(){
       )}
 
       {showInviteList && (
-        <div className="absolute right-4 top-16 bg-white border shadow-md p-3 rounded z-40 max-h-48 overflow-y-auto">
+        <div className="absolute right-4 top-16 bg-white border shadow-md p-3 rounded font-serif z-40 max-h-48 overflow-y-auto">
           <p className="font-semibold mb-2">Online Users</p>
           {onlineUsers.length === 0 ? (
             <p className="text-gray-400">No users online</p>
@@ -217,7 +220,7 @@ int main(){
               <button
                 key={user}
                 onClick={() => handleSendInvite(user)}
-                className="block w-full text-left px-3 py-1 hover:bg-gray-100 rounded"
+                className="block w-full bg-gray-500 text-white font-mono text-left px-3 py-1 hover:bg-gray-800 rounded"
                 disabled={inviteLoading}
               >
                 {user}
