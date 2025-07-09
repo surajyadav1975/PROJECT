@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
-
-const socket = io("http://localhost:3000",{
+const apiurl = import.meta.env.VITE_BACKEND_URL;
+const socket = io(`${apiurl}`,{
     transports: ["websocket"],
     withCredentials: true,
 }); 
