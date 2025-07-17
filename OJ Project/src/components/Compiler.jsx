@@ -228,7 +228,7 @@ int main(){
       )}
 
       {showInviteList && (
-        <div className="absolute right-4 top-16 bg-white border shadow-md p-3 rounded font-serif z-40 max-h-48 overflow-y-auto">
+        <div className="absolute right-4 top-30 bg-white border shadow-md p-3 rounded font-serif z-40 max-h-48 overflow-y-auto">
           <p className="font-semibold mb-2">Online Users</p>
           {onlineUsers.length === 0 ? (
             <p className="text-gray-400">No users online</p>
