@@ -89,11 +89,12 @@ if __name__ == "__main__":
     }
     else if(e.target.value=="java"){
       setCode(`// Write your code here...
-function main() {
-    
-}
-
-main();`)
+class Main {
+    public static void main(String[] args) {
+        // Your Java code goes inside this method
+        System.out.println("Hello, Java!");
+    }
+}`)
     }
     else if(e.target.value=="c"){
       setCode(`#include <stdio.h>
@@ -195,7 +196,7 @@ main();`)
         <div className="flex">
           <button
             onClick={() => setLeftTab("problem")}
-            className={`w-1/2 p-3 text-center border-b-2 ${
+            className={`w-1/2 p-3 text-center hover:cursor-pointer border-b-2 ${
               leftTab === "problem"
                 ? "border-blue-500 font-bold"
                 : "border-gray-200"
@@ -205,7 +206,7 @@ main();`)
           </button>
           <button
             onClick={() => setLeftTab("submission")}
-            className={`w-1/2 p-3 text-center border-b-2 ${
+            className={`w-1/2 p-3 text-center hover:cursor-pointer border-b-2 ${
               leftTab === "submission"
                 ? "border-blue-500 font-bold"
                 : "border-gray-200"
@@ -293,7 +294,7 @@ main();`)
         <div className="flex justify-between gap-4 p-4 bg-white">
           <select 
             onChange={handlelang}
-            className="border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-yellow-500">
+            className="border border-gray-300 px-4 py-2 hover:cursor-pointer rounded focus:ring-2 focus:ring-yellow-500">
             <option value="cpp">C++</option>
             <option value="c">C</option>
             <option value="java">Java</option>
@@ -302,19 +303,19 @@ main();`)
           </select>
           <div className="flex gap-4">
             <button
-            className="bg-sky-500 shadow-xl/20 text-white px-4 py-2 rounded hover:bg-sky-600"
+            className="bg-sky-500 shadow-xl/20 text-white hover:cursor-pointer px-4 py-2 rounded hover:bg-sky-600"
             onClick={handleai}
           >
             Get AI Hint's
           </button>
             <button
-            className="bg-yellow-500 shadow-xl/20 text-white px-4 py-2 rounded hover:bg-yellow-600"
+            className="bg-yellow-500 shadow-xl/20 text-white hover:cursor-pointer px-4 py-2 rounded hover:bg-yellow-600"
             onClick={handlerun}
           >
             Run
           </button>
           <button
-            className="bg-green-500 shadow-xl/20 text-white px-4 py-2 rounded hover:bg-green-700"
+            className="bg-green-500 shadow-xl/20 text-white hover:cursor-pointer px-4 py-2 rounded hover:bg-green-700"
             onClick={handlesubmit}
           >
             Submit
@@ -353,7 +354,7 @@ main();`)
             <button
               key={tab}
               onClick={() => setBottomTab(tab)}
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 hover:cursor-pointer ${
                 bottomTab === tab ? "bg-gray-700 font-bold" : "bg-gray-800"
               }`}
             >

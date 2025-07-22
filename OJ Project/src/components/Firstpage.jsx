@@ -35,13 +35,13 @@ const Firstpage = () => {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => navigate("/signup")}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl/30 px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl/30 hover:cursor-pointer px-6 py-3 rounded-lg font-semibold hover:scale-105 transition-transform"
           >
             Get Started
           </button>
           <button
             onClick={() => navigate("/problemlist")}
-            className="bg-yellow-400 text-black px-6 py-3 shadow-xl/30 rounded-lg font-semibold hover:bg-yellow-300 transition"
+            className="bg-yellow-400 text-black px-6 py-3 shadow-xl/30 hover:cursor-pointer rounded-lg font-semibold hover:bg-yellow-300 transition"
           >
             Explore Problems
           </button>

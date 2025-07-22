@@ -136,7 +136,7 @@ int main(){
         <select
           value={language}
           onChange={handleLanguageChange}
-          className="border px-3 py-2 rounded focus:outline-none"
+          className="border hover:cursor-pointer px-3 py-2 rounded focus:outline-none"
         >
           <option value="cpp">C++</option>
           <option value="c">C</option>
@@ -146,13 +146,13 @@ int main(){
         </select>
         <div className="flex gap-3">
           <button
-            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-700"
+            className="bg-purple-500 hover:cursor-pointer text-white px-4 py-2 rounded hover:bg-purple-700"
             onClick={() => setShowInviteList(!showInviteList)}
           >
             {inviteLoading ? "Sending..." : "Invite"}
           </button>
           <button
-            className="bg-black text-white p-2 rounded"
+            className="bg-black text-white hover:cursor-pointer p-2 rounded"
             onClick={() => setTheme(prev => prev === 'vs-dark' ? 'light' : 'vs-dark')}
           >
             <SunIcon className="h-5 w-5" />
@@ -192,7 +192,7 @@ int main(){
           />
           <button
             onClick={handleRun}
-            className="bg-green-500 text-white py-2 rounded hover:bg-green-600 mb-4"
+            className="bg-green-500 text-white py-2 hover:cursor-pointer rounded hover:bg-green-600 mb-4"
           >
             Run
           </button>
@@ -209,14 +209,14 @@ int main(){
             <p className="mb-4 font-medium">User <strong>{invitePrompt.fromUserId}</strong> invited you to collaborate. Accept?</p>
             <div className="flex justify-end gap-3">
               <button
-                className="bg-green-500 text-white px-4 py-1 rounded"
+                className="bg-green-500 text-white hover:cursor-pointer px-4 py-1 rounded"
                 onClick={() => {
                   socket.emit('accept-invite', { fromUserId: invitePrompt.fromUserId, toUserId: userName });
                   setInvitePrompt(null);
                 }}
               >Accept</button>
               <button
-                className="bg-red-500 text-white px-4 py-1 rounded"
+                className="bg-red-500 text-white hover:cursor-pointer px-4 py-1 rounded"
                 onClick={() => {
                   socket.emit('decline-invite', { fromUserId: invitePrompt.fromUserId, toUserId: userName });
                   setInvitePrompt(null);
@@ -237,7 +237,7 @@ int main(){
               <button
                 key={user}
                 onClick={() => handleSendInvite(user)}
-                className="block w-full bg-gray-500 text-white font-mono text-left px-3 py-1 hover:bg-gray-800 rounded"
+                className="block w-full bg-gray-500 text-white hover:cursor-pointer font-mono text-left px-3 py-1 hover:bg-gray-800 rounded"
                 disabled={inviteLoading}
               >
                 {user}
