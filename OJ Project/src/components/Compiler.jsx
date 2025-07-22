@@ -123,7 +123,13 @@ int main(){
     const templates = {
       cpp: `#include<bits/stdc++.h>\nusing namespace std;\n\nint main(){\n    // Write your code here...\n    return 0;\n}`,
       py: `# Write your code here...\ndef main():\n    pass\n\nif __name__ == "__main__":\n    main()`,
-      java: `// Write your code here...\nfunction main() {\n    \n}\n\nmain();`,
+      java: `// Write your code here...
+class Main {
+    public static void main(String[] args) {
+        // Your Java code goes inside this method
+        System.out.println("Hello, Java!");
+    }
+}`,
       c: `#include <stdio.h>\n\nint main() {\n    // Write your code here...\n    return 0;\n}`,
       js: `// Write your code here...\nfunction main() {\n    console.log("Hello, World!");\n}\n\nmain();`
     };
