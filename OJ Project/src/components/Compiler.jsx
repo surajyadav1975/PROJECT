@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Editor from "@monaco-editor/react";
-import { SunIcon } from '@heroicons/react/24/solid';
+import { SunIcon ,UserGroupIcon, XCircleIcon} from '@heroicons/react/24/solid';
 import socket from "../socket/Socket";
 import { useNavigate } from "react-router";
+import { ToastContainer, toast } from 'react-toastify';
 
 const Compiler = () => {
   const [code, setCode] = useState(`#include<bits/stdc++.h>
@@ -19,10 +20,12 @@ int main(){
   const [language, setLanguage] = useState("cpp");
   const [theme, setTheme] = useState("vs-dark");
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [isRunning, setIsRunning] = useState(false);
   const [tosocketid, settosocketid] = useState(null);
   const [invitePrompt, setInvitePrompt] = useState(null);
   const [inviteLoading, setInviteLoading] = useState(false);
   const [showInviteList, setShowInviteList] = useState(false);
+  const [collaboration, setCollaboration] = useState({ isActive: false, partner: null, roomId: null });
   const userName = localStorage.getItem('userName');
   
   const apiurl = import.meta.env.VITE_BACKEND_URL;
@@ -56,12 +59,14 @@ int main(){
             setInvitePrompt({ fromUserId});
         };
 
-        const handleInviteAccepted = ({ roomId, a, b }) => {
+        const handleInviteAccepted = ({ roomId, a, b ,from}) => {
+            const partner = from;
+            setCollaboration({ isActive: true, partner, roomId });
             console.log('✅ Invite accepted, room:', roomId);
             settosocketid(b);
             setInviteLoading(false);
             setShowInviteList(false);
-            alert('✅ Connected! You are now collaborating. To disconnect just leave the page');
+            toast.success(`🚀 You are now collaborating with ${partner}!`);
         };
 
         const handleInviteRejected = ({ roomId, a, b }) => {
@@ -69,11 +74,17 @@ int main(){
             settosocketid(null);
             setInviteLoading(false);
             setShowInviteList(false);
-            alert('❌ Connection Rejected');
+            toast.warn(`❌ Connection Rejected`);
         };
 
         const handleReceiveCode = ({ code }) => {
             setCode(code);
+        };
+
+        const handleleave = ({code}) => {
+            toast.info("Friend Left");
+            setCollaboration({ isActive: false, partner: null, roomId: null });
+            settosocketid(null);
         };
 
         const handleDisconnect = () => {
@@ -86,6 +97,7 @@ int main(){
         socket.on('invite-accepted', handleInviteAccepted);
         socket.on('invite-rejected', handleInviteRejected);
         socket.on('receive-code', handleReceiveCode);
+        socket.on('leave', handleleave);
         socket.on('disconnect', handleDisconnect);
 
         if (socket.connected) {
@@ -99,22 +111,37 @@ int main(){
             socket.off('receive-invite', handleReceiveInvite);
             socket.off('invite-accepted', handleInviteAccepted);
             socket.off('receive-code', handleReceiveCode);
+            socket.off('leave', handleleave);
             socket.off('disconnect', handleDisconnect);
         };
     }, [userName]);
 
   const handleSendInvite = (toUserId) => {
     setInviteLoading(true);
+    toast.info(`Sending invite to ${toUserId}...`);
     socket.emit('send-invite', { fromUserId: userName, toUserId });
+    setShowInviteList(false);
   };
+  
 
   const handleRun = async () => {
+    setIsRunning(true);
+    setOutput("Running your code...");
     try {
       const response = await axios.post(`${compilerurl}/run`, { code, language, input }, { withCredentials: true });
-      setOutput(response.data.output.output);
+      setOutput(response.data.output.output || "Execution finished with no output.");
     } catch (err) {
       setOutput(err.response?.data?.message || 'Error running code');
+    } finally {
+      setIsRunning(false);
     }
+  };
+
+  const handleLeaveSession = () => {
+    socket.emit('leave-session', { tosocketid, code});
+    toast.info("You have left the collaborative session.");
+    setCollaboration({ isActive: false, partner: null, roomId: null });
+    settosocketid(null);
   };
 
   const handleLanguageChange = (e) => {
@@ -138,6 +165,23 @@ class Main {
 
   return (
     <div className="h-screen flex flex-col bg-gray-100">
+      <ToastContainer position="top-right" autoClose={3000} theme="light" />
+            
+            {collaboration.isActive && (
+                <div className="bg-purple-600 text-white px-6 py-2 flex justify-between items-center shadow-lg z-10">
+                    <div className="flex items-center gap-2">
+                        <UserGroupIcon className="h-6 w-6" />
+                        <span className="font-bold">Collaborating with: {collaboration.partner}</span>
+                    </div>
+                    <button
+                        onClick={handleLeaveSession}
+                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:cursor-pointer hover:bg-red-600 transition flex items-center gap-1"
+                    >
+                        <XCircleIcon className="h-5 w-5" />
+                        Leave Session
+                    </button>
+                </div>
+            )}
       <div className="flex justify-between items-center border-b px-6 py-3 bg-white shadow">
         <select
           value={language}
@@ -153,7 +197,8 @@ class Main {
         <div className="flex gap-3">
           <button
             className="bg-purple-500 hover:cursor-pointer text-white px-4 py-2 rounded hover:bg-purple-700"
-            onClick={() => setShowInviteList(!showInviteList)}
+            onClick={() => setShowInviteList(prev => !prev)}
+            disabled={collaboration.isActive || inviteLoading}
           >
             {inviteLoading ? "Sending..." : "Invite"}
           </button>
@@ -175,8 +220,8 @@ class Main {
             value={code}
             onChange={(value) => {
               setCode(value);
-              if (tosocketid) {
-                socket.emit('code-change', { tosocketid, code: value });
+              if (collaboration.isActive && collaboration.roomId) {
+                  socket.emit('code-change', { tosocketid, code: value  });
               }
             }}
             options={{
@@ -198,9 +243,10 @@ class Main {
           />
           <button
             onClick={handleRun}
+            disabled={isRunning}
             className="bg-green-500 text-white py-2 hover:cursor-pointer rounded hover:bg-green-600 mb-4"
           >
-            Run
+            {isRunning ? 'Running...' : 'Run Code'}
           </button>
           <label className="font-semibold mb-2">Output:</label>
           <div className="w-full h-40 border p-2 rounded bg-gray-50 overflow-auto">

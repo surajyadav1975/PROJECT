@@ -1,6 +1,8 @@
 const { Server } = require('socket.io');
 
 let onlineUsers = {};
+const socketIdToUser = new Map();
+const userToSocketId = new Map();
 
 function setupSocket(server) {
   const io = new Server(server, {
@@ -19,6 +21,8 @@ function setupSocket(server) {
 
     socket.on('user-online', (userName) => {
       onlineUsers[socket.id] = userName;
+      // socketIdToUser.set(socket.id, userName);
+      // userToSocketId.set(userName, socket.id);
       console.log(`User ${userName} is online`);
       io.emit('update-online-users', Object.values(onlineUsers));
     });
@@ -48,8 +52,8 @@ function setupSocket(server) {
 
         socket.join(roomId);
 
-        io.to(fromSocketId).emit('invite-accepted', { roomId, a:fromSocketId, b:currid});
-        socket.emit('invite-accepted', { roomId, a:currid ,b:fromSocketId});
+        io.to(fromSocketId).emit('invite-accepted', { roomId, a:fromSocketId, b:currid, from:onlineUsers[socket.id]});
+        socket.emit('invite-accepted', { roomId, a:currid ,b:fromSocketId, from:onlineUsers[fromSocketId]});
 
         console.log(`🎉 Room ${roomId} created`);
       }
@@ -74,6 +78,12 @@ function setupSocket(server) {
         // console.log(tosocketid);
         if (tosocketid) {
             io.to(tosocketid).emit('receive-code', { code });
+        }
+    });
+
+    socket.on('leave-session', ({ tosocketid,code }) => {
+        if (tosocketid) {
+            io.to(tosocketid).emit('leave', {code});
         }
     });
   });

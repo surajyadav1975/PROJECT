@@ -4,10 +4,13 @@ import axios from "axios";
 import ReactMarkdown from 'react-markdown';
 import { SunIcon } from '@heroicons/react/24/solid'
 import Editor from "@monaco-editor/react";  
+import { ToastContainer, toast } from 'react-toastify';
 
 const Ide = () => {
   const [leftTab, setLeftTab] = useState("problem");
   const [bottomTab, setBottomTab] = useState("input");
+  const [isRunning, setIsRunning] = useState(false);
+  const [issubmitting, setissubmitting] = useState(false);
   const [problem, setProblem] = useState(null);
   const [code, setCode] = useState(`#include<bits/stdc++.h>
 using namespace std;
@@ -119,6 +122,8 @@ main();`)
 
   }
   const handlesubmit= async()=>{
+    setissubmitting(true);
+    setBottomTab("console");
     const userId = localStorage.getItem('userId');
     try{
       const data={
@@ -133,13 +138,24 @@ main();`)
 
       setConsoleMsg(response.data.results);
       setBottomTab("console");
+      if(response.data.verdict=== "Accepted"){
+        toast.success(`Submission Done`);
+      }else if(response.data.verdict=== "Rejected"){
+        toast.warn(`Testcases failed`);
+      }
     }
     catch(err){
+      toast.warn(`Error in submitting the code`);
       console.log('error in submitting the code');
+    } finally {
+      setissubmitting(false);
     }
   }
 
   const handlerun= async()=>{
+    setIsRunning(true);
+    setOutput("Running your code...");
+    setBottomTab("output");
     try{
       const data={
         code:code,
@@ -151,15 +167,16 @@ main();`)
         withCredentials: true,
       });
 
-      setOutput(response.data.output.output);
-      setBottomTab("output");
+      setOutput(response.data.output.output || "Code executed but there's no Output");
     }
     catch(err){
       if(err.response.status === 400){
-        setOutput(err.response.data.message);
+        setOutput(err.response.data.message || "some error occured");
         setBottomTab("output");
       }
       console.log('error in running the code');
+    } finally {
+      setIsRunning(false);
     }
   }
 
@@ -310,15 +327,17 @@ main();`)
           </button>
             <button
             className="bg-yellow-500 shadow-xl/20 text-white hover:cursor-pointer px-4 py-2 rounded hover:bg-yellow-600"
+            disabled={isRunning}
             onClick={handlerun}
           >
-            Run
+            {isRunning ? 'Running...' : 'Run'}
           </button>
           <button
             className="bg-green-500 shadow-xl/20 text-white hover:cursor-pointer px-4 py-2 rounded hover:bg-green-700"
+            disabled={issubmitting}
             onClick={handlesubmit}
           >
-            Submit
+            {issubmitting ? 'Submitting...' : 'Submit'}
           </button>
           <button
             className={`shadow-xl/20 border px-1 rounded cursor-pointer transition-colors duration-100 ${
